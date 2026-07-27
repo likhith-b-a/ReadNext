@@ -56,8 +56,7 @@ if "dark_mode" not in st.session_state:
     st.session_state["dark_mode"] = True
 
 def inject_css():
-    with open("./styles/styles.css") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    st.html("./styles/styles.css")
 
     theme = "Dark" if st.session_state.get("dark_mode", True) else "Light"
     var_rules = "; ".join(f"{k}: {v} !important" for k, v in THEME_VARS[theme].items())
@@ -69,7 +68,7 @@ def inject_css():
         color: var(--text-color) !important;
     }}
     """
-    st.markdown(f"<style>{override_css}</style>", unsafe_allow_html=True)
+    st.html(f"<style>{override_css}</style>")
 
 inject_css()
 

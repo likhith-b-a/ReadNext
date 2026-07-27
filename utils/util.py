@@ -218,12 +218,12 @@ def _render_book_card(book, show_explanation=False, centered=False):
 
 def display_book_card_with_image(book):
     """Card for title/keyword search results, with the match explanation."""
-    st.markdown(_render_book_card(book, show_explanation=True), unsafe_allow_html=True)
+    st.html(_render_book_card(book, show_explanation=True))
 
 def display_book_card_with_image_for_author(book):
     """Card for author search results (no match explanation)."""
-    st.markdown(_render_book_card(book, show_explanation=False), unsafe_allow_html=True)
+    st.html(_render_book_card(book, show_explanation=False))
 
 def display_random_book(book):
     """Centered card for the sidebar's random book suggestion."""
-    st.markdown(_render_book_card(book, show_explanation=False, centered=True), unsafe_allow_html=True)
+    st.html(_render_book_card(book, show_explanation=False, centered=True))
