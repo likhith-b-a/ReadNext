@@ -88,7 +88,11 @@ books_df.head()
 
 # A constant sentinel token separates concatenated fields so that bigrams
 # never span two different fields (e.g. last author word + first category word).
-# It appears in nearly every document, so TF-IDF's IDF term drives its weight to ~0.
+# It stays in the vocabulary (NOT a stop word: sklearn strips stop words
+# before forming n-grams, which would undo the bigram separation above).
+# smooth_idf floors its IDF at 1 rather than 0, so it can still surface as a
+# top unigram feature for a given document -- callers that read off "top
+# TF-IDF terms" per document should filter it out explicitly.
 FIELD_SEP = ' xsepx '
 
 books_df['weighted_content'] = (
