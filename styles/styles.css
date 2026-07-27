@@ -1,38 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Open+Sans:wght@300;400;600;700&display=swap');
 
-/* Light palette (default) */
+/* Default palette; app.py's Dark Mode toggle overrides these at runtime. */
 :root {
-  --primary-color: #7c3aed;
-  --secondary-color: #9333ea;
-  --accent-color: #0ea5e9;
-  --text-color: #0f172a;
-  --light-text: #475569;
-  --background-color: #f8fafc;
-  --card-bg: #ffffff;
-  --border-color: #e2e8f0;
-  --shadow-color: rgba(15, 23, 42, 0.08);
+  --primary-color: #8b5cf6;
+  --secondary-color: #a855f7;
+  --accent-color: #38bdf8;
+  --text-color: #f8fafc;
+  --light-text: #cbd5e1;
+  --background-color: #0f172a;
+  --card-bg: #1e293b;
+  --border-color: #334155;
+  --shadow-color: rgba(0, 0, 0, 0.5);
   --success-color: #10b981;
   --error-color: #ef4444;
   --warning-color: #f59e0b;
-  --badge-bg: rgba(124, 58, 237, 0.08);
-  --badge-text: #6d28d9;
-}
-
-/* Dark palette override, follows the viewer's OS/browser preference */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary-color: #8b5cf6;
-    --secondary-color: #a855f7;
-    --accent-color: #38bdf8;
-    --text-color: #f8fafc;
-    --light-text: #cbd5e1;
-    --background-color: #0f172a;
-    --card-bg: #1e293b;
-    --border-color: #334155;
-    --shadow-color: rgba(0, 0, 0, 0.5);
-    --badge-bg: rgba(139, 92, 246, 0.18);
-    --badge-text: #c4b5fd;
-  }
+  --badge-bg: rgba(139, 92, 246, 0.18);
+  --badge-text: #c4b5fd;
 }
 
 /* Base styling */

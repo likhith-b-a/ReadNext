@@ -12,9 +12,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Explicit theme overrides for the "Light"/"Dark" toggle. "System" skips this
-# entirely and lets styles.css's prefers-color-scheme media query decide.
-THEME_OVERRIDE_VARS = {
+# Explicit variable sets for the Dark/Light toggle.
+THEME_VARS = {
     "Light": {
         "--primary-color": "#7c3aed",
         "--secondary-color": "#9333ea",
@@ -43,17 +42,34 @@ THEME_OVERRIDE_VARS = {
     },
 }
 
-if "theme_override" not in st.session_state:
-    st.session_state["theme_override"] = "System"
+# App-wide containers Streamlit themes itself; we force these to our
+# variables too so the toggle affects the whole app, not just the sidebar.
+APP_CONTAINER_SELECTORS = (
+    ".stApp",
+    '[data-testid="stAppViewContainer"]',
+    '[data-testid="stMain"]',
+    '[data-testid="stHeader"]',
+    '[data-testid="stBottomBlockContainer"]',
+)
+
+if "dark_mode" not in st.session_state:
+    st.session_state["dark_mode"] = True
 
 def inject_css():
     with open("./styles/styles.css") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-    override = st.session_state.get("theme_override", "System")
-    if override in THEME_OVERRIDE_VARS:
-        rules = "; ".join(f"{k}: {v} !important" for k, v in THEME_OVERRIDE_VARS[override].items())
-        st.markdown(f"<style>:root {{ {rules}; }}</style>", unsafe_allow_html=True)
+    theme = "Dark" if st.session_state.get("dark_mode", True) else "Light"
+    var_rules = "; ".join(f"{k}: {v} !important" for k, v in THEME_VARS[theme].items())
+    containers = ", ".join(APP_CONTAINER_SELECTORS)
+    override_css = f"""
+    :root {{ {var_rules}; }}
+    {containers} {{
+        background-color: var(--background-color) !important;
+        color: var(--text-color) !important;
+    }}
+    """
+    st.markdown(f"<style>{override_css}</style>", unsafe_allow_html=True)
 
 inject_css()
 
@@ -68,12 +84,7 @@ def main():
         books_df = model_data['books_df']
 
         #sidebar
-        st.sidebar.radio(
-            "Theme",
-            ["System", "Light", "Dark"],
-            horizontal=True,
-            key="theme_override",
-        )
+        st.sidebar.toggle("🌙 Dark Mode", key="dark_mode")
         st.sidebar.divider()
 
         st.sidebar.markdown("### Dataset Statistics")
