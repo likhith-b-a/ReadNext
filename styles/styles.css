@@ -1,15 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Open+Sans:wght@300;400;600;700&display=swap');
 
 :root {
-  --primary-color: #1e3a8a;
-  --secondary-color: #7c3aed;
-  --accent-color: #f59e0b;
-  --text-color: #1f2937;
-  --light-text: #4b5563;
-  --background-color: #f8fafc;
-  --card-bg: #ffffff;
-  --border-color: #e5e7eb;
-  --shadow-color: rgba(0, 0, 0, 0.1);
+  --primary-color: #8b5cf6;
+  --secondary-color: #a855f7;
+  --accent-color: #38bdf8;
+  --text-color: #f8fafc;
+  --light-text: #cbd5e1;
+  --background-color: #0f172a;
+  --card-bg: #1e293b;
+  --border-color: #334155;
+  --shadow-color: rgba(0, 0, 0, 0.5);
   --success-color: #10b981;
   --error-color: #ef4444;
   --warning-color: #f59e0b;
@@ -93,7 +93,7 @@ body {
 }
 
 [data-testid="stSidebar"] {
-  background-color: #f1f5f9;
+  background-color: var(--card-bg);
   border-right: 1px solid var(--border-color);
   padding: 1rem;
 }

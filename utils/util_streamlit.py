@@ -3,30 +3,39 @@ import utils.util as util
 import utils.util_model as recommender
 
 def advanced_filters(df, key_prefix=""):
-    with st.expander("Advanced Filters"):
-        col1, col2 = st.columns(2)
-
+    st.markdown("<br>", unsafe_allow_html=True)
+    col1, col2, col3, col4 = st.columns([1, 2, 1, 1])
+    
+    with col1:
+        top_n = st.number_input(
+            "Number of Books",
+            min_value=5, max_value=15, value=10,
+            key=f"{key_prefix}_top_n"
+        )
+        
+    with col2:
         exclude_cat = st.multiselect(
             "Exclude Categories",
             options=sorted(df['Category'].unique()),
             key=f"{key_prefix}_exclude_cat"
         )
 
-        min_year, max_year = st.slider(
-            "Publication Year Range",
+    with col3:
+        min_year = st.number_input(
+            "Publication Year (From)",
             min_value=int(df['year_of_publication'].min()),
             max_value=int(df['year_of_publication'].max()),
-            value=(
-                int(df['year_of_publication'].min()),
-                int(df['year_of_publication'].max())
-            ),
-            key=f"{key_prefix}_year_range"
+            value=int(df['year_of_publication'].min()),
+            key=f"{key_prefix}_min_year"
         )
-
-        top_n = st.slider(
-            "Number of Recommendations" if key_prefix == "" else "Number of Books",
-            min_value=5, max_value=20, value=10,
-            key=f"{key_prefix}_top_n"
+        
+    with col4:
+        max_year = st.number_input(
+            "Publication Year (To)",
+            min_value=int(df['year_of_publication'].min()),
+            max_value=int(df['year_of_publication'].max()),
+            value=int(df['year_of_publication'].max()),
+            key=f"{key_prefix}_max_year"
         )
 
     return exclude_cat, min_year, max_year, top_n

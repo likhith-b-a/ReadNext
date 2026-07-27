@@ -29,12 +29,15 @@ def main():
         
         #sidebar
         st.sidebar.markdown("### Dataset Statistics")
-        st.sidebar.write(f"Total Books: {len(books_df)}")
-        st.sidebar.write(f"Total Authors: {books_df['book_author'].nunique()}")
-        st.sidebar.write(f"Categories: {books_df['Category'].nunique()}")
-        st.sidebar.write(f"Publication Years: {books_df['year_of_publication'].min()} - {books_df['year_of_publication'].max()}")
+        col1, col2 = st.sidebar.columns(2)
+        col1.metric("Total Books", f"{len(books_df):,}")
+        col2.metric("Total Authors", f"{books_df['book_author'].nunique():,}")
+        col3, col4 = st.sidebar.columns(2)
+        col3.metric("Categories", f"{books_df['Category'].nunique():,}")
+        col4.metric("Years", f"{books_df['year_of_publication'].min()} - {str(books_df['year_of_publication'].max())[2:]}")
         
         with st.sidebar:
+            st.divider()
             st.markdown("### 🔄 Random Book Suggestion")
             if st.button("Suggest a Random Book"):
                 book = books_df.sample(1).iloc[0]
@@ -49,7 +52,8 @@ def main():
             st.write("Enter a book title to find similar books you might enjoy.")
                         
             input_title = helper.get_suggestion(books_df, "book_title", "Book Title", key_prefix="title")
-            exclude_cat, min_year, max_year, top_n = helper.advanced_filters(books_df)
+            exclude_cat, min_year, max_year, top_n = helper.advanced_filters(books_df, key_prefix="title")
+            
             helper.run_recommendation(
                 input_query=input_title,
                 query_type="title",
@@ -69,14 +73,15 @@ def main():
             st.write("Enter an author's name to discover their books.")
             
             input_author = helper.get_suggestion(books_df, "book_author", "Author Name", key_prefix="author")
-            exclude_cat_author, min_year_author, max_year_author, top_n_author = helper.advanced_filters(books_df, key_prefix="author")
+            exclude_cat, min_year, max_year, top_n = helper.advanced_filters(books_df, key_prefix="author")
+            
             helper.run_recommendation(
                 input_query=input_author,
                 query_type="author",
-                top_n=top_n_author,
-                exclude_cat=exclude_cat_author,
-                min_year=min_year_author,
-                max_year=max_year_author,
+                top_n=top_n,
+                exclude_cat=exclude_cat,
+                min_year=min_year,
+                max_year=max_year,
                 display_function=util.display_book_card_with_image_for_author,
                 model_data=model_data,
                 books_df=books_df,
@@ -89,14 +94,15 @@ def main():
             st.write("Enter keywords to find related books.")
             
             input_keywords = st.text_input("Keywords (e.g., mystery detective crime)", key="keywords_input")
-            exclude_cat_keywords, min_year_keywords, max_year_keywords, top_n_keywords = helper.advanced_filters(books_df, key_prefix="keywords")
+            exclude_cat, min_year, max_year, top_n = helper.advanced_filters(books_df, key_prefix="keywords")
+            
             helper.run_recommendation(
                 input_query=input_keywords,
                 query_type="keywords",
-                top_n=top_n_keywords,
-                exclude_cat=exclude_cat_keywords,
-                min_year=min_year_keywords,
-                max_year=max_year_keywords,
+                top_n=top_n,
+                exclude_cat=exclude_cat,
+                min_year=min_year,
+                max_year=max_year,
                 display_function=util.display_book_card_with_image,
                 model_data=model_data,
                 books_df=books_df,

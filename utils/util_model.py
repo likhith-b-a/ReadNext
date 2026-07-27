@@ -8,6 +8,12 @@ def load_model(model_path='model.pkl'):
     try:
         with open(model_path, 'rb') as f:
             model_data = pickle.load(f)
+            
+        # Clean and deduplicate author names
+        df = model_data['books_df']
+        df['book_author'] = df['book_author'].astype(str).str.strip().str.title()
+        df['book_author'] = df['book_author'].str.replace(r'\s+', ' ', regex=True)
+        
         return model_data
     except FileNotFoundError:
         st.error(f"Model file '{model_path}' not found. Please check the file path.")
@@ -27,7 +33,13 @@ def get_recommendations_by_title(title, tfidf_matrix, df, indices, top_n=10):
     try:
         idx = indices[title]
     except KeyError:
-        return None
+        # Fallback to substring matching if exact title is not found
+        matches = df[df['book_title'].str.contains(title, case=False, na=False, regex=False)]
+        if matches.empty:
+            return None
+        # take the first match's exact title
+        matched_title = matches.iloc[0]['book_title']
+        idx = indices[matched_title]
     
     # Calculate similarity on the fly
     query_vector = tfidf_matrix[idx]

@@ -40,7 +40,7 @@ def recommend_books(model_data, query=None, query_type='title', top_n=10,
     # Extract model components
     tfidf = model_data['tfidf_vectorizer']
     tfidf_matrix = model_data['tfidf_matrix']
-    # cosine_sim is computed on the fly now
+    # cosine_sim is computed on the fly now 
     indices = model_data['indices']
     books_df = model_data['books_df']
     
@@ -174,13 +174,6 @@ def display_book_card_with_image(book):
     category_html = f'<div>Category: {book["Category"]}</div>' if 'Category' in book else ''
     year_html = f'<div>Year: {book["year_of_publication"]}</div>' if 'year_of_publication' in book else ''
     
-    # Prepare score HTML
-    score_html = ''
-    if 'similarity_score' in book:
-        score_html = f'<div>Similarity: {book["similarity_score"]:.2f}</div>'
-    elif 'relevance_score' in book:
-        score_html = f'<div>Relevance: {book["relevance_score"]:.2f}</div>'
-    
     # Prepare explanation HTML
     explanation_html = f'<div class="explanation">{book["explanation"]}</div>' if 'explanation' in book else ''
     
@@ -196,7 +189,6 @@ def display_book_card_with_image(book):
                 <div class='book-author'>by {book['book_author']}</div>
                 {category_html}
                 {year_html}
-                {score_html}
                 <div class='book-author'>Average Rating: {book['average_rating']}</div>
                 {explanation_html}
             </div>

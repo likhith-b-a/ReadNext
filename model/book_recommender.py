@@ -41,6 +41,15 @@ books_df.shape
 
 
 books_df = books_df.drop_duplicates(subset='book_title', keep='first')
+
+# Keep only the top 14 categories that add the most value
+top_categories = [
+    'Fiction', 'Juvenile fiction', 'Biography & autobiography', 'Humor',
+    'History', 'Religion', 'Body, mind & spirit', 'Social science',
+    'Family & relationships', 'True crime', 'Self-help', 
+    'Juvenile nonfiction', 'Business & economics', 'Health & fitness'
+]
+books_df = books_df[books_df['Category'].isin(top_categories)].reset_index(drop=True)
 books_df.shape
 
 
