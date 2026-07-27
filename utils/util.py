@@ -92,7 +92,7 @@ def visualize_recommendations(recommendations, query_type):
     if recommendations is None or len(recommendations) == 0:
         return
     
-    st.markdown("<h3 style='font-size: 1.5rem; color: #1e3a8a; margin-bottom: 1rem;'>📊 Insights from Your Recommendations</h3>", unsafe_allow_html=True)
+    st.subheader(":material/insights: Insights from your recommendations")
     
     col1, col2 = st.columns(2)
     

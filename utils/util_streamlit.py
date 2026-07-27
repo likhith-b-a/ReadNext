@@ -3,35 +3,35 @@ import utils.util as util
 import utils.util_model as recommender
 
 def advanced_filters(df, key_prefix=""):
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.space("small")
     col1, col2, col3, col4 = st.columns([1, 2, 1, 1])
-    
+
     with col1:
         top_n = st.number_input(
-            "Number of Books",
+            "Number of books",
             min_value=5, max_value=15, value=10,
             key=f"{key_prefix}_top_n"
         )
-        
+
     with col2:
         exclude_cat = st.multiselect(
-            "Exclude Categories",
+            "Exclude categories",
             options=sorted(df['Category'].unique()),
             key=f"{key_prefix}_exclude_cat"
         )
 
     with col3:
         min_year = st.number_input(
-            "Publication Year (From)",
+            "Publication year (from)",
             min_value=int(df['year_of_publication'].min()),
             max_value=int(df['year_of_publication'].max()),
             value=int(df['year_of_publication'].min()),
             key=f"{key_prefix}_min_year"
         )
-        
+
     with col4:
         max_year = st.number_input(
-            "Publication Year (To)",
+            "Publication year (to)",
             min_value=int(df['year_of_publication'].min()),
             max_value=int(df['year_of_publication'].max()),
             value=int(df['year_of_publication'].max()),
@@ -63,11 +63,14 @@ def run_recommendation(
     display_function, model_data, books_df, input_label=None
 ):
     button_key = f"{query_type}_button"
-    button_label = "Get Recommendations" if query_type == "title" else (
-        "Find Books" if query_type == "author" else "Search"
-    )
+    if query_type == "title":
+        button_label, button_icon = "Get recommendations", ":material/auto_awesome:"
+    elif query_type == "author":
+        button_label, button_icon = "Find books", ":material/person_search:"
+    else:
+        button_label, button_icon = "Search", ":material/search:"
 
-    if st.button(button_label, key=button_key):
+    if st.button(button_label, key=button_key, icon=button_icon):
         if input_query:
             with st.spinner(f"Finding books based on {input_label or query_type}..."):
                 recs = util.recommend_books(
@@ -91,7 +94,7 @@ def run_recommendation(
                     for _, book in explained_recs.iterrows():
                         display_function(book)
 
-                    with st.expander("📊 Visualization"):
+                    with st.expander("Visualization", icon=":material/bar_chart:"):
                         util.visualize_recommendations(explained_recs, query_type)
                 else:
                     st.warning(f"No results found for '{input_query}'. Try different input or filters.")
