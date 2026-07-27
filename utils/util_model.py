@@ -71,9 +71,16 @@ def search_books_by_content(keywords, tfidf, tfidf_matrix, df, top_n=10):
     5) Create Dataframe of top_n similar books
     6) Add Relevence Score
     """
-    
     query_vector = tfidf.transform([keywords])
     cosine_similarities = cosine_similarity(query_vector, tfidf_matrix).flatten()
+    
+    # Add direct match boost
+    keywords_lower = keywords.lower()
+    title_matches = df['book_title'].str.lower().str.contains(keywords_lower, na=False, regex=False)
+    author_matches = df['book_author'].str.lower().str.contains(keywords_lower, na=False, regex=False)
+    
+    cosine_similarities[title_matches] += 1.0
+    cosine_similarities[author_matches] += 0.5
     
     similar_indices = cosine_similarities.argsort()[-top_n:][::-1]
     similar_scores = cosine_similarities[similar_indices]
