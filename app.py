@@ -74,19 +74,20 @@ def inject_css():
 inject_css()
 
 def main():
-    
+
     model_path = "./model/model.pkl"
     model_data = recommender.load_model(model_path)
-    
-    st.markdown("<h1 class='main-header'>📚 ReadNext: Book Recommendations</h1>", unsafe_allow_html=True)
-    
+
+    header_col, theme_col = st.columns([6, 1])
+    with header_col:
+        st.markdown("<h1 class='main-header'>📚 ReadNext: Book Recommendations</h1>", unsafe_allow_html=True)
+    with theme_col:
+        st.toggle("🌙 Dark Mode", key="dark_mode")
+
     if model_data:
         books_df = model_data['books_df']
 
         #sidebar
-        st.sidebar.toggle("🌙 Dark Mode", key="dark_mode")
-        st.sidebar.divider()
-
         st.sidebar.markdown("### Dataset Statistics")
         st.sidebar.metric("Total Books", f"{len(books_df):,}")
         st.sidebar.metric("Total Authors", f"{books_df['book_author'].nunique():,}")

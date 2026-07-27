@@ -25,6 +25,15 @@ body {
   color: var(--text-color);
 }
 
+/* Streamlit renders its own widget labels (text inputs, toggle, radio,
+   selectbox, etc.) with its native theme's text color, which stays dark
+   since we don't force a Streamlit base theme. Without this they go
+   invisible against our dark palette. */
+[data-testid="stWidgetLabel"],
+[data-testid="stWidgetLabel"] p {
+  color: var(--text-color) !important;
+}
+
 /* Header styling */
 .main-header {
   font-family: 'Merriweather', serif;
