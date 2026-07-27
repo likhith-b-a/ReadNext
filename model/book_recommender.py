@@ -21,13 +21,10 @@ warnings.filterwarnings('ignore')
 # In[2]:
 
 
-try:
-    nltk.download('stopwords', quiet=True)
-    nltk.download('wordnet', quiet=True)
-    nltk.download('punkt_tab', quiet=True)
-    print("NLTK resources downloaded.")
-except:
-    print("NLTK resources couldn't be downloaded. Some text processing features might be limited.")
+nltk.download('stopwords', quiet=True)
+nltk.download('wordnet', quiet=True)
+nltk.download('punkt_tab', quiet=True)
+print("NLTK resources downloaded.")
 
 
 # In[3]:
@@ -68,7 +65,7 @@ def advanced_text_preprocessing(text):
     if not isinstance(text, str):
         return ""
     
-    text = re.sub('[^a-zA-Z\s]', '', text)
+    text = re.sub(r'[^a-zA-Z\s]', '', text)
     text = text.lower()
     tokens = nltk.word_tokenize(text)
     stop_words = set(stopwords.words('english'))
@@ -89,10 +86,15 @@ books_df.head()
 # In[7]:
 
 
+# A constant sentinel token separates concatenated fields so that bigrams
+# never span two different fields (e.g. last author word + first category word).
+# It appears in nearly every document, so TF-IDF's IDF term drives its weight to ~0.
+FIELD_SEP = ' xsepx '
+
 books_df['weighted_content'] = (
-    books_df['book_title'] + ' ' + books_df['book_title'] + ' ' + 
-    books_df['book_author'] + ' ' + books_df['book_author'] + ' ' + 
-    books_df['Category'] + ' ' +
+    books_df['book_title'] + FIELD_SEP + books_df['book_title'] + FIELD_SEP +
+    books_df['book_author'] + FIELD_SEP + books_df['book_author'] + FIELD_SEP +
+    books_df['Category'] + FIELD_SEP +
     books_df['processed_summary']
 )
 books_df['weighted_content'][0]
@@ -101,7 +103,13 @@ books_df['weighted_content'][0]
 # In[8]:
 
 
-tfidf = TfidfVectorizer(stop_words='english', max_features=5000, ngram_range=(1, 2))
+tfidf = TfidfVectorizer(
+    stop_words='english',
+    max_features=8000,
+    ngram_range=(1, 2),
+    min_df=2,
+    sublinear_tf=True,
+)
 tfidf_matrix = tfidf.fit_transform(books_df['weighted_content'])
 
 

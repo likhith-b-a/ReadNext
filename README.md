@@ -2,6 +2,9 @@
 
 ReadNext is an intelligent book recommendation system that helps readers discover new books based on titles, authors, or keywords. Built with Streamlit and powered by machine learning, this application analyzes book summaries and metadata to suggest similar books you might enjoy.
 
+- **Repository**: https://github.com/likhith-b-a/ReadNext
+- **Live demo**: https://myreadnext.streamlit.app/
+
 ## Features
 
 - **Title-Based Recommendations**: Find similar books based on a title you enjoyed
@@ -13,6 +16,7 @@ ReadNext is an intelligent book recommendation system that helps readers discove
   - Most prolific authors
   - Popular books by year
 - **Random Book Suggestions**: Get spontaneous book recommendations
+- **Light/Dark Mode**: Follows your system or browser theme preference automatically
 
 ## Installation
 
@@ -33,12 +37,13 @@ ReadNext is an intelligent book recommendation system that helps readers discove
    pip install -r requirements.txt
    ```
 
-3. Run the model notebook to generate the recommendation model:
+3. Generate the recommendation model:
    ```bash
    cd model
-   jupyter notebook book_recommender.ipynb
+   python book_recommender.py
    ```
-   - Make sure to run all cells in the notebook to generate the `model.pkl` file
+   - This reads `model/Dataset/books.csv`, builds the TF-IDF model, and writes `model/model.pkl`
+   - `book_recommender.ipynb` is the same pipeline in notebook form, kept for interactive exploration
 
 4. Return to the main directory and launch the Streamlit app:
    ```bash
@@ -52,11 +57,11 @@ ReadNext is an intelligent book recommendation system that helps readers discove
 
 ReadNext uses natural language processing and machine learning techniques to provide book recommendations:
 
-1. **Text Preprocessing**: Book summaries and metadata are cleaned and processed using NLTK for lemmatization, stopword removal, and other NLP techniques
+1. **Text Preprocessing**: Book summaries are cleaned and processed using NLTK for lemmatization, stopword removal, and other NLP techniques
 
-2. **Vectorization**: TF-IDF (Term Frequency-Inverse Document Frequency) creates numerical representations of books
+2. **Weighted Vectorization**: Title, author, category and processed summary are combined into a single document per book (title and author repeated to weight them more heavily than summary text), joined with a separator token so n-grams never blend two different fields together, then vectorized with TF-IDF (Term Frequency-Inverse Document Frequency)
 
-3. **Similarity Calculation**: Cosine similarity measures how closely books relate to each other based on their content
+3. **Similarity Calculation**: Cosine similarity measures how closely books relate to each other based on their content; keyword search additionally boosts direct title/author substring matches, capped so the final relevance score stays on a consistent 0–1 scale
 
 4. **Filtering**: Advanced filters allow users to exclude categories or specify publication date ranges
 
@@ -64,20 +69,23 @@ ReadNext uses natural language processing and machine learning techniques to pro
 
 ```
 readnext/
-├── app.py                 # Main Streamlit application
-├── model/                 # Model training files
-│   ├── book_recommender.ipynb   # Jupyter notebook for model creation
-│   └── model.pkl          # Serialized model data
-├── utils/                 # Utility functions
-│   ├── util.py            # General utilities
-│   ├── util_streamlit.py  # Streamlit-specific utilities
-│   └── util_model.py      # Model-related utilities
-├── styles/                # CSS styles
-│   └── styles.css         # Custom styling
-├── Dataset/               # Data files
-│   └── books.csv          # Book dataset
-├── images/                # Screenshots and images
-└── requirements.txt       # Project dependencies
+├── app.py                       # Main Streamlit application
+├── .streamlit/
+│   └── config.toml              # Theme/branding config
+├── model/                       # Model training files
+│   ├── Dataset/
+│   │   └── books.csv            # Book dataset
+│   ├── book_recommender.py      # Training script (canonical, run to regenerate model.pkl)
+│   ├── book_recommender.ipynb   # Same pipeline as a notebook, for interactive exploration
+│   └── model.pkl                # Serialized model data
+├── utils/                       # Utility functions
+│   ├── util.py                  # General utilities (search, book cards, visualizations)
+│   ├── util_streamlit.py        # Streamlit-specific utilities (inputs, filters)
+│   └── util_model.py            # Model-related utilities (recommendation logic)
+├── styles/                      # CSS styles
+│   └── styles.css               # Custom styling, light/dark aware
+├── images/                      # Screenshots and images
+└── requirements.txt             # Project dependencies
 ```
 
 ## Technologies Used
@@ -106,6 +114,7 @@ readnext/
 - Collaborative filtering based on user ratings
 - Mobile-friendly responsive design
 - Book availability and purchase links
+- Fuzzy/typo-tolerant title and author search
 
 ## Contributing
 
@@ -119,6 +128,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
 
 ---

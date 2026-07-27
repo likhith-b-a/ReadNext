@@ -12,9 +12,49 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Explicit theme overrides for the "Light"/"Dark" toggle. "System" skips this
+# entirely and lets styles.css's prefers-color-scheme media query decide.
+THEME_OVERRIDE_VARS = {
+    "Light": {
+        "--primary-color": "#7c3aed",
+        "--secondary-color": "#9333ea",
+        "--accent-color": "#0ea5e9",
+        "--text-color": "#0f172a",
+        "--light-text": "#475569",
+        "--background-color": "#f8fafc",
+        "--card-bg": "#ffffff",
+        "--border-color": "#e2e8f0",
+        "--shadow-color": "rgba(15, 23, 42, 0.08)",
+        "--badge-bg": "rgba(124, 58, 237, 0.08)",
+        "--badge-text": "#6d28d9",
+    },
+    "Dark": {
+        "--primary-color": "#8b5cf6",
+        "--secondary-color": "#a855f7",
+        "--accent-color": "#38bdf8",
+        "--text-color": "#f8fafc",
+        "--light-text": "#cbd5e1",
+        "--background-color": "#0f172a",
+        "--card-bg": "#1e293b",
+        "--border-color": "#334155",
+        "--shadow-color": "rgba(0, 0, 0, 0.5)",
+        "--badge-bg": "rgba(139, 92, 246, 0.18)",
+        "--badge-text": "#c4b5fd",
+    },
+}
+
+if "theme_override" not in st.session_state:
+    st.session_state["theme_override"] = "System"
+
 def inject_css():
     with open("./styles/styles.css") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)    
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+    override = st.session_state.get("theme_override", "System")
+    if override in THEME_OVERRIDE_VARS:
+        rules = "; ".join(f"{k}: {v} !important" for k, v in THEME_OVERRIDE_VARS[override].items())
+        st.markdown(f"<style>:root {{ {rules}; }}</style>", unsafe_allow_html=True)
+
 inject_css()
 
 def main():
@@ -26,16 +66,22 @@ def main():
     
     if model_data:
         books_df = model_data['books_df']
-        
+
         #sidebar
+        st.sidebar.radio(
+            "Theme",
+            ["System", "Light", "Dark"],
+            horizontal=True,
+            key="theme_override",
+        )
+        st.sidebar.divider()
+
         st.sidebar.markdown("### Dataset Statistics")
-        col1, col2 = st.sidebar.columns(2)
-        col1.metric("Total Books", f"{len(books_df):,}")
-        col2.metric("Total Authors", f"{books_df['book_author'].nunique():,}")
-        col3, col4 = st.sidebar.columns(2)
-        col3.metric("Categories", f"{books_df['Category'].nunique():,}")
-        col4.metric("Years", f"{books_df['year_of_publication'].min()} - {str(books_df['year_of_publication'].max())[2:]}")
-        
+        st.sidebar.metric("Total Books", f"{len(books_df):,}")
+        st.sidebar.metric("Total Authors", f"{books_df['book_author'].nunique():,}")
+        st.sidebar.metric("Categories", f"{books_df['Category'].nunique():,}")
+        st.sidebar.metric("Years", f"{int(books_df['year_of_publication'].min())}–{int(books_df['year_of_publication'].max())}")
+
         with st.sidebar:
             st.divider()
             st.markdown("### 🔄 Random Book Suggestion")
@@ -121,7 +167,7 @@ def main():
             if explore_option == "Category Distribution":
                 fig, ax = plt.subplots(figsize=(10, 8))
                 category_counts = books_df['Category'].value_counts().head(20)
-                sns.barplot(x=category_counts.values, y=category_counts.index, hue=category_counts.index,palette='viridis', ax=ax)
+                sns.barplot(x=category_counts.values, y=category_counts.index, hue=category_counts.index, palette='viridis', legend=False, ax=ax)
                 ax.set_title('Top 20 Book Categories')
                 ax.set_xlabel('Number of Books')
                 plt.tight_layout()
@@ -156,7 +202,7 @@ def main():
             elif explore_option == "Authors with Most Books":
                 top_authors = books_df['book_author'].value_counts().head(20)
                 fig, ax = plt.subplots(figsize=(10, 8))
-                sns.barplot(x=top_authors.values, y=top_authors.index, palette='coolwarm', ax=ax)
+                sns.barplot(x=top_authors.values, y=top_authors.index, hue=top_authors.index, palette='coolwarm', legend=False, ax=ax)
                 ax.set_title('Authors with Most Books')
                 ax.set_xlabel('Number of Books')
                 plt.tight_layout()

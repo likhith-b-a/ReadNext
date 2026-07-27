@@ -1,6 +1,7 @@
 from sklearn.metrics.pairwise import cosine_similarity
 import streamlit as st
 import pickle
+import numpy as np
 
 @st.cache_data
 def load_model(model_path='model.pkl'):
@@ -93,7 +94,10 @@ def search_books_by_content(keywords, tfidf, tfidf_matrix, df, top_n=10):
     
     cosine_similarities[title_matches] += 1.0
     cosine_similarities[author_matches] += 0.5
-    
+    # Boosts above are ranking-only nudges; clip back to [0, 1] so relevance_score
+    # stays on the same scale the explanation thresholds (0.55/0.35) expect.
+    cosine_similarities = np.clip(cosine_similarities, 0, 1)
+
     similar_indices = cosine_similarities.argsort()[-top_n:][::-1]
     similar_scores = cosine_similarities[similar_indices]
     
